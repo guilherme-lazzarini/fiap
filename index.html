@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno | FIAP</title>
+    <!-- Fontes e Frameworks -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --fiap-red: #ed145b;
+            --fiap-red-hover: #c50f49;
+            --fiap-bg: #07080a;
+            --fiap-card: #11131a;
+            --fiap-card-border: #232631;
+            --fiap-text: #f0f2f5;
+            --fiap-text-muted: #8c92a4;
+            --fiap-green: #00e676;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--fiap-bg);
+            color: var(--fiap-text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- TELA DE LOGIN FIAP --- */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 30%, #151824 0%, #07080a 70%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 15px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-card {
+            background: var(--fiap-card);
+            border: 1px solid var(--fiap-card-border);
+            padding: 35px 25px;
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--fiap-red);
+        }
+
+        .login-logo-img {
+            max-width: 130px;
+            height: auto;
+            margin-bottom: 5px;
+            object-fit: contain;
+        }
+
+        .login-system-name {
+            font-size: 11px;
+            color: var(--fiap-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--fiap-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 16px;
+            background: #171a24;
+            border: 1px solid var(--fiap-card-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--fiap-red);
+            background: #1c202d;
+            box-shadow: 0 0 0 3px rgba(237, 20, 91, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--fiap-red);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: var(--fiap-red-hover);
+        }
+
+        .alert-error {
+            background: rgba(237, 20, 91, 0.1);
+            border: 1px solid rgba(237, 20, 91, 0.3);
+            color: #ff5c8d;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: left;
+        }
+
+        .login-help {
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--fiap-text-muted);
+            border-top: 1px solid var(--fiap-card-border);
+            padding-top: 15px;
+        }
+
+        /* --- PORTAL / PAINEL PRINCIPAL --- */
+        #main-app {
+            display: none;
+        }
+
+        /* Navbar Responsiva */
+        .navbar {
+            background: var(--fiap-card);
+            border-bottom: 1px solid var(--fiap-card-border);
+            padding: 0 20px;
+            height: 65px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-logo-img {
+            max-width: 85px;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--fiap-text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a.active {
+            position: relative;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -21px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--fiap-red);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile-widget {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #171a24;
+            padding: 4px 10px 4px 4px;
+            border-radius: 30px;
+            border: 1px solid var(--fiap-card-border);
+        }
+
+        .user-avatar-mini {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center top; /* Garante foco inteligente no topo/rosto */
+        }
+
+        .user-meta-mini span {
+            display: block;
+        }
+
+        .user-name-mini {
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .user-rm-mini {
+            font-size: 9px;
+            color: var(--fiap-text-muted);
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: none;
+            color: var(--fiap-text-muted);
+            cursor: pointer;
+            font-size: 15px;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+
+        .btn-logout:hover {
+            color: var(--fiap-red);
+        }
+
+        /* Container principal */
+        .main-container {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .page-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--fiap-card-border);
+            padding-bottom: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+            color: var(--fiap-text-muted);
+        }
+
+        .badge-status {
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--fiap-green);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- CARTEIRINHA DIGITAL --- */
+        .id-card-wrapper {
+            background: linear-gradient(135deg, #131620 0%, #090b10 100%);
+            border: 1px solid var(--fiap-card-border);
+            border-radius: 14px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-top-accent {
+            height: 4px;
+            background: linear-gradient(90deg, var(--fiap-red), #ff7597);
+            width: 100%;
+        }
+
+        .id-card-body {
+            padding: 25px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .photo-container {
+            position: relative;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        /* CORREÇÃO DO ENQUADRAMENTO DA FOTO (OBJECT-FIT E OBJECT-POSITION) */
+        .student-photo {
+            width: 130px;
+            height: 165px;
+            object-fit: cover;
+            object-position: center 15%; /* Centraliza horizontalmente e foca na parte superior onde fica o rosto */
+            border-radius: 8px;
+            border: 2px solid var(--fiap-card-border);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            background-color: #0b0d13;
+        }
+
+        .validity-badge {
+            margin-top: 8px;
+            background: #1c202d;
+            border: 1px solid var(--fiap-card-border);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            text-align: center;
+            color: var(--fiap-text-muted);
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .student-details {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .detail-group.full {
+            grid-column: span 2;
+        }
+
+        .detail-label {
+            font-size: 9px;
+            color: var(--fiap-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            word-break: break-word;
+        }
+
+        .detail-value.highlight {
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .id-card-footer {
+            background: #0b0d13;
+            border-top: 1px solid var(--fiap-card-border);
+            padding: 16px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sec-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--fiap-text-muted);
+        }
+
+        .sec-info i {
+            color: var(--fiap-red);
+        }
+
+        /* --- SISTEMA DE AUTENTICAÇÃO HOLOGRÁFICA COM A CARA DA FIAP --- */
+        .auth-security-panel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .holo-seal {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--fiap-red), #ff007f, #7928ca, #00dfd8, var(--fiap-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 15px rgba(237, 20, 91, 0.4);
+            animation: rotateHolo 6s linear infinite;
+        }
+
+        .holo-seal-inner {
+            width: 42px;
+            height: 42px;
+            background: #0d0f17;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .holo-seal-inner i {
+            color: var(--fiap-red);
+            font-size: 14px;
+            filter: drop-shadow(0 0 3px rgba(237, 20, 91, 0.8));
+        }
+
+        .holo-seal-inner span {
+            font-size: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--fiap-text-muted);
+            margin-top: 1px;
+            font-weight: 700;
+        }
+
+        @keyframes rotateHolo {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .auth-token-box {
+            background: #171a24;
+            border: 1px solid rgba(237, 20, 91, 0.3);
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: inset 0 0 8px rgba(237, 20, 91, 0.05);
+        }
+
+        .auth-token-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9px;
+            color: var(--fiap-red);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .auth-token-value {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: #fff;
+            letter-spacing: 1.2px;
+        }
+
+        /* --- MEDIA QUERIES PARA MOBILE --- */
+        @media(max-width: 768px) {
+            .navbar {
+                padding: 0 12px;
+            }
+
+            .nav-links span {
+                display: none;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a {
+                font-size: 15px;
+            }
+
+            .user-meta-mini {
+                display: none;
+            }
+
+            .user-profile-widget {
+                padding: 4px;
+            }
+
+            .id-card-body {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 15px;
+                gap: 20px;
+            }
+
+            .student-details {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .detail-group.full {
+                grid-column: span 1;
+            }
+
+            .id-card-footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                padding: 14px 15px;
+            }
+
+            .auth-security-panel {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN FIAP -->
+    <div id="login-screen">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <img src="logo-fiap.png" alt="FIAP" class="login-logo-img" onerror="this.src='https://via.placeholder.com/130x40/11131a/ed145b?text=FIAP'">
+                <div class="login-system-name" style="margin-top: 8px;">Portal do Aluno / On</div>
+                
+                <div id="login-alert" class="alert-error">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Credenciais inválidas.
+                </div>
+
+                <form onsubmit="realizarLogin(event)">
+                    <div class="form-group">
+                        <label for="user-input">RM</label>
+                        <input type="text" id="user-input" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pass-input">Senha</label>
+                        <input type="password" id="pass-input" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Entrar no Portal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (PORTAL DO ALUNO) -->
+    <div id="main-app">
+        <!-- BARRA DE NAVEGAÇÃO -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <img src="logo-fiap.png" alt="FIAP" class="nav-logo-img" onerror="this.src='https://via.placeholder.com/85x25/11131a/ed145b?text=FIAP'">
+                <ul class="nav-links">
+                    <li><a href="#" title="Início"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                    <li><a href="#" class="active" title="Carteirinha"><i class="fa-solid fa-id-card"></i> <span>Carteirinha</span></a></li>
+                    <li><a href="#" title="Acadêmico"><i class="fa-solid fa-book-open"></i> <span>Acadêmico</span></a></li>
+                    <li><a href="#" title="Financeiro"><i class="fa-solid fa-wallet"></i> <span>Financeiro</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="user-profile-widget">
+                    <!-- FOTO MINIATURA PNG LOCAL -->
+                    <img src="foto-aluno.png" alt="Avatar" class="user-avatar-mini" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'">
+                    <div class="user-meta-mini">
+                        <span class="user-name-mini">Guilherme Lazzarini</span>
+                        <span class="user-rm-mini">RM 314159</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="realizarLogout()" title="Sair do sistema"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </nav>
+
+        <!-- CONTEÚDO DA PÁGINA -->
+        <main class="main-container">
+            <div class="page-header-flex">
+                <div>
+                    <h1 class="page-title">Carteirinha Digital</h1>
+                </div>
+                <div>
+                    <div class="badge-status">
+                        <i class="fa-solid fa-circle" style="font-size: 6px;"></i> Matrícula Ativa
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPONENTE DA CARTEIRINHA -->
+            <div class="id-card-wrapper">
+                <div class="card-top-accent"></div>
+                
+                <div class="id-card-body">
+                    <div class="photo-container">
+                        <!-- FOTO PRINCIPAL PNG LOCAL COM AJUSTE DE ENQUADRAMENTO PROPORCIONAL -->
+                        <img src="foto-aluno.png" alt="Foto do Aluno" class="student-photo" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=350&q=80'">
+                        <div class="validity-badge">Validade: Dez / 2026</div>
+                    </div>
+
+                    <div class="student-details">
+                        <div class="detail-group full">
+                            <div class="detail-label">Nome Completo</div>
+                            <div class="detail-value highlight">GUILHERME DO VALE LAZZARINI</div>
+                        </div>
+
+                        <div class="detail-group">
+                            <div class="detail-label">RM (Matrícula)</div>
+                            <div class="detail-value">314159</div>
+                        </div>
+
+                        <div class="detail-group">
+                            <div class="detail-label">Documento (CPF)</div>
+                            <div class="detail-value">348.792.648-22</div>
+                        </div>
+
+                        <div class="detail-group full">
+                            <div class="detail-label">Curso</div>
+                            <div class="detail-value">Engenharia de Software</div>
+                        </div>
+
+                        <div class="detail-group">
+                            <div class="detail-label">Modalidade / Período</div>
+                            <div class="detail-value">Graduação Tech - Noturno</div>
+                        </div>
+
+                        <div class="detail-group">
+                            <div class="detail-label">Unidade</div>
+                            <div class="detail-value">Paulista (São Paulo/SP)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="id-card-footer">
+                    <div class="sec-info">
+                        <i class="fa-solid fa-shield-check"></i> 
+                        <span>Autenticado digitalmente via FIAP ON</span>
+                    </div>
+                    
+                    <!-- SISTEMA DE AUTENTICIDADE -->
+                    <div class="auth-security-panel">
+                        <div class="auth-token-box">
+                            <div class="auth-token-header">
+                                <i class="fa-solid fa-lock" style="font-size: 8px;"></i> Token Hash Validado
+                            </div>
+                            <div class="auth-token-value">9F82-A4B7-SEC2026</div>
+                        </div>
+                        <div class="holo-seal" title="Selo Criptográfico de Autenticidade FIAP">
+                            <div class="holo-seal-inner">
+                                <i class="fa-solid fa-microchip"></i>
+                                <span>TECH ID</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SCRIPT DE CONTROLE -->
+    <script>
+        function realizarLogin(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('user-input').value.trim();
+            const senha = document.getElementById('pass-input').value.trim();
+            const alerta = document.getElementById('login-alert');
+
+            if (usuario === '314159' && senha === '1234') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+            } else {
+                alerta.style.display = 'block';
+            }
+        }
+
+        function realizarLogout() {
+            document.getElementById('user-input').value = '';
+            document.getElementById('pass-input').value = '';
+            document.getElementById('login-alert').style.display = 'none';
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
